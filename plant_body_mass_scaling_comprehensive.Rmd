@@ -1,0 +1,494 @@
+---
+title: "Plant Body-Mass Scaling Relationships: Comprehensive Working Catalog"
+author: "Working synthesis"
+date: "2026-03-28"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+## Purpose
+
+This is a comprehensive working catalog of measured plant allometric relationships linking traits or life-history attributes to plant size (mass, diameter, height, or related size proxies) across physiology, ecology, and evolution.
+
+## Important Scope Note
+
+No synthesis can guarantee inclusion of literally every estimate ever published. This document is designed as a high-coverage, citable starting point and should be iteratively expanded as you encounter clade-, biome-, and method-specific studies.
+
+## Systematic Search Workflow (Updated)
+
+This workflow is designed to move this catalog toward near-exhaustive, reproducible coverage.
+
+### Databases and Sources
+
+- Web of Science Core Collection
+- Scopus
+- BIOSIS
+- CAB Abstracts
+- AGRICOLA
+- JSTOR
+- Google Scholar (first 300 relevance-ranked records per query)
+- Crossref/OpenAlex (for DOI completion and citation graph expansion)
+- Forward and backward citation chaining from core syntheses
+
+### Search Strings
+
+```{r}
+search_queries <- tibble::tribble(
+  ~Query_id, ~Focus, ~Search_string,
+  "A", "General allometry", "(plant OR tree OR shrub OR herb OR angiosperm OR gymnosperm OR fern OR bryophyte) AND (allometr* OR \"scaling relationship*\" OR \"power law\" OR exponent) AND (biomass OR mass OR \"stem diameter\" OR DBH OR height)",
+  "B", "Physiology", "(plant*) AND (metabolic rate OR respiration OR photosynthesis OR transpiration OR hydraulic conductance) AND (allometr* OR exponent OR scaling) AND (biomass OR diameter OR height)",
+  "C", "Ecology and demography", "(plant*) AND (\"self-thinning\" OR mortality OR recruitment OR fecundity OR \"seed output\" OR abundance) AND (allometr* OR size-scaling OR exponent)",
+  "D", "Evolution and trait integration", "(plant*) AND (\"seed mass\" OR \"leaf size\" OR twig OR fruit mass OR reproductive allocation) AND (allometr* OR \"size scaling\") AND (phylogen* OR comparative)",
+  "E", "Methods and model fitting", "(SMA OR RMA OR \"standardized major axis\" OR \"mixed effects\" OR \"phylogenetic regression\") AND (plant allometr*)"
+)
+
+knitr::kable(search_queries, format = "html", escape = TRUE, caption = "Recommended search queries for updating this catalog.")
+```
+
+### Screening and Eligibility Rules
+
+Include studies that:
+
+- Report empirical plant scaling fits or provide enough data to recover slope/exponent.
+- Provide trait definition, size metric, taxonomic scope, and analyzable units.
+- Identify sampling context (clade, biome, ontogenetic stage, or experiment type).
+
+Exclude studies that:
+
+- Are non-plant only or do not provide empirical plant fit data.
+- Are purely theoretical without plant calibration.
+- Lack metadata needed to map relationship type, scope, or units.
+
+### Taxonomy Reconciliation Requirements
+
+- Use an explicit plant backbone (for example POWO/WFO), with version/date.
+- Preserve original reported taxon names and store reconciled accepted names separately.
+- Record accepted status, synonym status, backbone ID, match method, confidence, and timestamp.
+- Keep unresolved or ambiguous names explicitly; never force-match silently.
+
+### Evidence Tiering
+
+Each relationship should be tagged into one tier:
+
+- Empirical quantitative
+- Empirical qualitative
+- Conceptual or historical
+
+This reduces the risk of treating conceptual statements as equivalent to fitted quantitative evidence.
+
+## Column Definitions
+
+- `Typical_scaling_form`: Common mathematical form used in the literature.
+- `First_discovery_year`: Earliest commonly cited seminal source for that relationship in plant biology.
+- `Key_citations`: Seminal or widely used references.
+- `Explanation`: Plain-language interpretation.
+- `Core_assumptions`: Assumptions required for meaningful inference.
+
+## Comprehensive Table
+
+```{r}
+library(tibble)
+library(dplyr)
+library(knitr)
+
+scaling_tbl <- tribble(
+  ~Domain, ~Relationship, ~Typical_scaling_form, ~First_discovery_year, ~Key_citations, ~Explanation, ~Core_assumptions,
+
+  "Physiology",
+  "Whole-plant metabolic rate vs biomass",
+  "B = a*M^b, b ~ 0.75",
+  1998,
+  "Enquist et al. (1998); West et al. (1999)",
+  "Larger plants use more total energy but sublinearly per unit mass.",
+  "Transport network is approximately space-filling; terminal units and resource delivery constraints are comparable.",
+
+  "Physiology",
+  "Whole-plant respiration vs biomass",
+  "R = a*M^b, b ~ 0.75-1.0",
+  2006,
+  "Reich et al. (2006); Mori et al. (2010)",
+  "Respiration increases with size, with exponent shifts by tissue and size class.",
+  "Temperature, tissue composition, and measurement protocol are normalized or modeled.",
+
+  "Physiology",
+  "Whole-plant photosynthesis vs biomass",
+  "P = a*M^b, b ~ 0.7-1.0",
+  1998,
+  "Enquist et al. (1998); Niklas and Enquist (2001)",
+  "Carbon gain rises with size, often less than proportionally.",
+  "Comparable light environment and canopy structure, or explicit control for them.",
+
+  "Physiology",
+  "Absolute growth rate vs biomass",
+  "AGR = a*M^b, b ~ 0.75",
+  2001,
+  "Niklas and Enquist (2001); Enquist et al. (2007)",
+  "Larger plants add more mass per unit time in absolute terms.",
+  "Growth near quasi-steady resource allocation and comparable time windows.",
+
+  "Physiology",
+  "Relative growth rate vs biomass",
+  "RGR = a*M^b, b ~ -0.25",
+  2001,
+  "Niklas and Enquist (2001)",
+  "Mass-specific growth usually declines with increasing size.",
+  "Ontogenetic effects are controlled or explicitly modeled.",
+
+  "Physiology",
+  "Time to maturation vs biomass",
+  "T = a*M^b, b ~ 0.25",
+  2001,
+  "Niklas and Enquist (2001); West et al. (1999)",
+  "Larger-bodied plants generally take longer to reproduce.",
+  "Comparable life-history stage definitions and reproductive onset criteria.",
+
+  "Physiology",
+  "Lifespan vs biomass",
+  "L = a*M^b, b ~ 0.15-0.30",
+  2001,
+  "Niklas and Enquist (2001)",
+  "Longevity tends to increase with maximum plant size.",
+  "Mortality hazards and disturbance regimes are comparable or modeled.",
+
+  "Physiology",
+  "Sapwood area vs supported leaf area (pipe model)",
+  "A_s = a*L_A^b, b ~ 1",
+  1964,
+  "Shinozaki et al. (1964a, 1964b)",
+  "Conductive stem area tracks distal leaf demand.",
+  "Hydraulic supply-demand matching and valid sapwood identification.",
+
+  "Physiology",
+  "Whole-plant transpiration vs sapwood area",
+  "E = a*A_s^b, b ~ 1",
+  1984,
+  "Waring et al. (1984); Meinzer et al. (2005)",
+  "Water flux scales with conducting cross-sectional area.",
+  "VPD and stomatal regulation differences are controlled or represented.",
+
+  "Physiology",
+  "Stem diameter vs aboveground biomass",
+  "AGB = a*D^b, b ~ 2-3",
+  1994,
+  "Niklas (1994); Chave et al. (2014)",
+  "Diameter is a strong predictor of biomass.",
+  "Wood density and height effects are included or constrained.",
+
+  "Physiology",
+  "Height vs stem diameter",
+  "H = a*D^b, b ~ 0.5-0.8",
+  1976,
+  "McMahon and Kronauer (1976); Niklas (1994)",
+  "Taller plants require disproportionate stem support and hydraulic capacity.",
+  "Mechanical stability and hydraulic constraints jointly shape observed scaling.",
+
+  "Physiology",
+  "Crown radius vs stem diameter",
+  "C_r = a*D^b, b ~ 0.5-1.0",
+  1990,
+  "King (1990); Niklas (1994)",
+  "Crown spread scales predictably with stem size.",
+  "Limited distortion from extreme asymmetric competition.",
+
+  "Physiology",
+  "Crown volume vs stem diameter",
+  "V_c = a*D^b, b ~ 1.5-3",
+  1990,
+  "King (1990); West et al. (2009)",
+  "Canopy volume increases steeply with trunk size.",
+  "Crown architecture class is consistent enough for pooled inference.",
+
+  "Physiology",
+  "Leaf mass vs stem mass",
+  "M_L = a*M_S^b, b ~ 0.7-1.1",
+  2002,
+  "Enquist and Niklas (2002); Poorter et al. (2012)",
+  "Biomass partitioning between leaves and stems shifts predictably with size.",
+  "Comparable ontogenetic stage and allocation context.",
+
+  "Physiology",
+  "Root mass vs shoot mass",
+  "M_R = a*M_Sh^b, b ~ 0.8-1.2",
+  2002,
+  "Enquist and Niklas (2002); Poorter et al. (2012)",
+  "Belowground and aboveground investment covary allometrically.",
+  "Soil resource heterogeneity is accounted for or limited.",
+
+  "Physiology",
+  "Fine-root respiration vs root biomass",
+  "R_r = a*M_r^b, b ~ 0.75-1",
+  2006,
+  "Reich et al. (2006)",
+  "Root maintenance costs rise with root system size.",
+  "Comparable root turnover and tissue activity classes.",
+
+  "Physiology",
+  "Vessel diameter vs stem diameter",
+  "d_v = a*D^b, b > 0",
+  2006,
+  "Anfodillo et al. (2006); Olson et al. (2014)",
+  "Larger stems tend to contain wider conduits.",
+  "Hydraulic safety-efficiency tradeoff is the dominant design axis.",
+
+  "Physiology",
+  "Conduit tapering vs path length or height",
+  "d_v = a*L^b with axial taper",
+  1999,
+  "West et al. (1999); Savage et al. (2010)",
+  "Conduit tapering can offset path-length resistance.",
+  "Network architecture approximates transport-theory assumptions.",
+
+  "Physiology",
+  "Bark thickness vs stem diameter",
+  "T_b = a*D^b, b ~ 0.8-1.2",
+  1983,
+  "Jackson et al. (1999); Rosell et al. (2017)",
+  "Protective bark investment scales with stem size and disturbance pressure.",
+  "Disturbance regime context (fire/herbivory) is represented.",
+
+  "Physiology",
+  "Petiole diameter vs lamina size",
+  "D_p = a*A_leaf^b, b ~ 0.4-0.7",
+  1949,
+  "Corner (1949); Olson et al. (2009)",
+  "Petiole support and hydraulic capacity track lamina dimensions.",
+  "Leaf mechanical design and venation constraints are comparable.",
+
+  "Ecology",
+  "Self-thinning: stand density vs mean plant mass",
+  "N = a*Mbar^(-3/2) (classic)",
+  1963,
+  "Yoda et al. (1963); Weller (1987)",
+  "Crowded stands lose individuals as mean size increases.",
+  "Competition is strong and acts on shared limiting resources.",
+
+  "Ecology",
+  "Stand density vs mean stem diameter",
+  "N = a*D^b, b ~ -1.5 to -2",
+  1933,
+  "Reineke (1933); Weller (1987)",
+  "Density-size tradeoff represented with diameter metric.",
+  "Even-aged stand approximation and site comparability.",
+
+  "Ecology",
+  "Individual light interception vs plant size",
+  "I = a*M^b, often b < 1",
+  1990,
+  "King (1990); Falster and Westoby (2003)",
+  "Larger plants intercept more light but often with diminishing returns.",
+  "Neighborhood and crown-geometry effects are modeled or constrained.",
+
+  "Ecology",
+  "Mortality rate vs stem diameter",
+  "mu = a*D^b, often b < 0",
+  1995,
+  "Kobe et al. (1995); Lines et al. (2010)",
+  "Background mortality often declines with size.",
+  "Acute disturbance mortality is separated from background mortality.",
+
+  "Ecology",
+  "Recruitment output vs parent size",
+  "F = a*M^b, b > 0",
+  2006,
+  "Muller-Landau et al. (2006); Moles et al. (2008)",
+  "Larger plants tend to produce more propagules and recruits.",
+  "Seed limitation and microsite limitation are distinguished.",
+
+  "Ecology",
+  "Seed output vs plant biomass",
+  "N_seed = a*M^b, b ~ 0.7-1.2",
+  1992,
+  "Aarssen and Taylor (1992); Henery and Westoby (2001)",
+  "Reproductive output increases strongly with plant size.",
+  "Comparable reproductive season and pollination context.",
+
+  "Ecology",
+  "Forest individual production vs size",
+  "P_i = a*M^b, b ~ 0.75",
+  2007,
+  "Enquist et al. (2007)",
+  "Large individuals contribute disproportionately to stand production.",
+  "Census intervals and growth estimation are comparable.",
+
+  "Ecology",
+  "Gap-capture ability vs size",
+  "G = a*D^b, b > 0",
+  2005,
+  "Poorter et al. (2005); Wright et al. (2010)",
+  "Larger crowns and stems improve post-disturbance light capture.",
+  "Disturbance regime and local competitive structure are represented.",
+
+  "Ecology",
+  "Species abundance vs typical adult size",
+  "A = a*M^b, usually b < 0",
+  2006,
+  "Muller-Landau et al. (2006); White et al. (2007)",
+  "Communities often contain fewer individuals of larger species.",
+  "Sampling completeness and detectability bias are addressed.",
+
+  "Ecology",
+  "Growth-mortality tradeoff with size",
+  "g(D) and mu(D) follow size-dependent allometries",
+  2011,
+  "Ruger et al. (2011); Iida et al. (2014)",
+  "Size mediates demographic tradeoffs among ecological strategies.",
+  "Reliable repeated censuses and sufficient demographic events.",
+
+  "Evolution",
+  "Seed mass vs adult plant height",
+  "M_seed = a*H^b, b > 0",
+  2005,
+  "Moles et al. (2005); Westoby et al. (1992)",
+  "Taller species tend to evolve larger seeds on average.",
+  "Phylogenetic non-independence is explicitly modeled.",
+
+  "Evolution",
+  "Seed number-seed mass tradeoff",
+  "N_seed proportional to M_seed^(-1) at fixed reproductive mass",
+  1974,
+  "Smith and Fretwell (1974); Moles and Westoby (2006)",
+  "Larger offspring generally reduce offspring number under budget constraints.",
+  "Approximate fixed reproductive allocation per episode.",
+
+  "Evolution",
+  "Leaf size vs twig size (Corner's rule)",
+  "A_leaf = a*D_twig^b, b > 0",
+  1949,
+  "Corner (1949); Sun et al. (2006)",
+  "Evolutionary integration links support axes and leaf dimensions.",
+  "Developmental integration constraints are comparable across taxa.",
+
+  "Evolution",
+  "Branching area preservation across sizes",
+  "Sum daughter diameters^p approximately parent diameter^p",
+  1500,
+  "Leonardo da Vinci notes; Eloy (2011)",
+  "Branching allometry recurs across lineages and scales.",
+  "Hydraulic or mechanical optimality dominates branching design.",
+
+  "Evolution",
+  "Maximum height vs stem diameter across clades",
+  "H_max = a*D^b, b < 1",
+  1994,
+  "Niklas (1994); Niklas and Spatz (2004)",
+  "Mechanical and hydraulic constraints bound height evolution.",
+  "Environment and phylogeny are controlled in comparative analyses.",
+
+  "Evolution",
+  "Reproductive biomass vs vegetative size",
+  "M_repr = a*M^b, b context dependent",
+  1998,
+  "Sugiyama and Bazzaz (1998); Weiner (2004)",
+  "Allocation schedules evolve with life history and size trajectory.",
+  "Ontogenetic stage and resource context are standardized.",
+
+  "Evolution",
+  "Xylem conduit size vs plant size across angiosperms",
+  "d_v = a*D^b, b > 0",
+  2009,
+  "Olson et al. (2009); Olson and Rosell (2013)",
+  "Conduit scaling reflects adaptation to size-driven transport demand.",
+  "Climate and habitat effects are partitioned from pure size effects.",
+
+  "Evolution",
+  "Floral display size vs vegetative size",
+  "F_size = a*M^b, usually shallow positive b",
+  1997,
+  "Delph et al. (1997); Sletvold (2002)",
+  "Larger plants generally support larger or more numerous floral displays.",
+  "Pollination environment and mating system differences are modeled.",
+
+  "Evolution",
+  "Fruit mass vs plant size",
+  "M_fruit = a*M^b, b > 0",
+  2005,
+  "Bolmgren and Eriksson (2005); Moles et al. (2007)",
+  "Fruit size often increases with overall plant size and dispersal syndrome.",
+  "Phylogeny and disperser-guild effects are represented.",
+
+  "Cross-domain",
+  "Leaf lifespan vs LMA and whole-plant size strategy",
+  "LL = a*LMA^b (positive), with size-strategy covariation",
+  1992,
+  "Reich et al. (1992); Wright et al. (2004)",
+  "Leaf economics relationships integrate with size-dependent growth strategies.",
+  "Trait protocols are standardized and canopy position effects are controlled.",
+
+  "Cross-domain",
+  "Hydraulic conductance vs stem size",
+  "K = a*D^b",
+  1985,
+  "Tyree and Zimmermann (1985) and later syntheses",
+  "Larger stems generally have disproportionately larger conductance.",
+  "Temperature, viscosity, path length, and embolism status are accounted for.",
+
+  "Cross-domain",
+  "Whole-plant mass vs stem diameter",
+  "M = a*D^b",
+  1994,
+  "Niklas (1994); Niklas and Spatz (2004)",
+  "Diameter-based scaling underpins many trait-size and demographic allometries.",
+  "Allometric model form and wood-density variation are appropriately handled."
+)
+
+kable(
+  scaling_tbl,
+  format = "html",
+  escape = TRUE,
+  caption = "Comprehensive working catalog of measured plant size-scaling relationships."
+)
+```
+
+## Second Table: Confidence, Exponent Ranges, and Analysis Use
+
+```{r}
+confidence_tbl <- tribble(
+  ~Relationship, ~Evidence_confidence, ~Typical_exponent_range, ~Typical_data_scope, ~Analysis_use_notes,
+
+  "Whole-plant metabolic rate vs biomass", "High", "b ~ 0.70-0.85", "Cross-species and ontogenetic datasets", "Strong for broad comparative scaling; avoid assuming a universal fixed exponent in every clade.",
+  "Whole-plant respiration vs biomass", "High", "b ~ 0.75-1.00", "Seedlings to mature plants; tissue-specific contrasts", "Report temperature correction and tissue composition assumptions.",
+  "Whole-plant photosynthesis vs biomass", "Moderate", "b ~ 0.70-1.00", "Cross-species and environment-stratified datasets", "Include light environment and canopy architecture covariates.",
+  "Absolute growth rate vs biomass", "High", "b ~ 0.65-0.85", "Ontogenetic growth series; multispecies compilations", "Use consistent growth intervals and distinguish stress vs non-stress regimes.",
+  "Relative growth rate vs biomass", "High", "b ~ -0.35 to -0.15", "Seedling and juvenile datasets; ontogenetic gradients", "Control for ontogeny explicitly when comparing taxa.",
+  "Sapwood area vs supported leaf area", "High", "b ~ 0.9-1.1", "Tree branch/segment and whole-tree measurements", "Useful hydraulic proxy; validate sapwood-heartwood separation protocol.",
+  "Stem diameter vs aboveground biomass", "High", "b ~ 2.0-3.2", "Forest inventories, destructive calibration studies", "Core equation for biomass estimation; include wood density and height when possible.",
+  "Height vs stem diameter", "High", "b ~ 0.5-0.9", "Forest plots and species-level allometry datasets", "Interpret as joint hydraulic-mechanical outcome; stratify by life form.",
+  "Root mass vs shoot mass", "High", "b ~ 0.8-1.2", "Pot and field studies across resource gradients", "Report soil/resource context because slope and intercept can shift.",
+  "Vessel diameter vs stem diameter", "Moderate", "b > 0 (often ~0.1-0.4)", "Xylem anatomical datasets across stem sizes", "Pair with embolism/safety traits for mechanistic interpretation.",
+  "Self-thinning: stand density vs mean mass", "High", "slope ~ -1.5 (classical, variable)", "Even-aged dense stands under competition", "Use cautiously outside strong crowding or mixed-age stands.",
+  "Stand density vs mean diameter", "High", "b ~ -1.5 to -2.0", "Forestry and long-term stand datasets", "Best interpreted near upper-density frontier conditions.",
+  "Mortality rate vs stem diameter", "Moderate", "b often < 0", "Repeated forest censuses", "Separate background from disturbance mortality for inference.",
+  "Seed output vs plant biomass", "Moderate", "b ~ 0.7-1.2", "Reproductive census datasets", "Estimate over complete reproductive windows; account for masting where relevant.",
+  "Species abundance vs adult size", "Moderate", "b typically < 0", "Community inventory datasets", "Correct for detectability and sampling completeness before cross-site comparisons.",
+  "Seed mass vs adult height", "High", "b > 0", "Global trait compilations with phylogeny", "Apply phylogenetic models; raw regressions can overstate significance.",
+  "Seed number-seed mass tradeoff", "High", "near -1 at fixed reproductive budget", "Comparative reproductive allocation datasets", "Interpret within explicit reproductive budget assumptions.",
+  "Leaf size vs twig size (Corner's rule)", "High", "b > 0", "Comparative morphology datasets", "Strong structural integration signal; useful in trait-network analyses.",
+  "Maximum height vs stem diameter", "High", "b < 1", "Broad clade and biome datasets", "Interpret with climatic and biome context to avoid overgeneralization.",
+  "Reproductive biomass vs vegetative size", "Moderate", "b context dependent", "Life-history and allocation datasets", "Separate annual vs perennial strategies and ontogenetic stage.",
+  "Fruit mass vs plant size", "Moderate", "b > 0", "Comparative reproductive trait datasets", "Model phylogeny and dispersal syndrome jointly for robust inference.",
+  "Hydraulic conductance vs stem size", "High", "positive scaling; b variable", "Stem hydraulic measurements across sizes", "Standardize for temperature, segment length, and embolism state.",
+  "Whole-plant mass vs stem diameter", "High", "b commonly > 2", "Destructive biomass and inventory datasets", "Foundational bridge trait for translating diameter to multiple performance variables."
+)
+
+kable(
+  confidence_tbl,
+  format = "html",
+  escape = TRUE,
+  caption = "Evidence confidence, exponent ranges, and practical analysis notes for key scaling relationships."
+)
+```
+
+## Interpretation Notes
+
+- Exponents are often context-dependent and vary by clade, biome, ontogenetic stage, and statistical method.
+- `First_discovery_year` indicates the commonly cited seminal point for each relationship, not necessarily the earliest historical mention.
+
+## Suggested Next Expansion
+
+1. Add clade-specific rows (angiosperms, gymnosperms, ferns, bryophytes, crops).
+2. Add biome-specific exponent tables and confidence intervals.
+3. Add method metadata (OLS vs SMA/RMA vs mixed-effects vs phylogenetic models).
+4. Add uncertainty fields per relationship (estimate range, sample size, taxa count).
