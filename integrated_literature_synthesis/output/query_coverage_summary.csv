@@ -1,0 +1,16 @@
+query_id,query_text,records_fetched,terminal_reason,pages_attempted,pages_failed
+Q01,plant allometry biomass diameter height scaling exponent,421,empty_page,6,0
+Q02,tree allometry dbh biomass equation log-log slope,699,empty_page,8,0
+Q03,leaf mass area allometry plant scaling relationship,800,max_pages_reached,8,0
+Q04,root shoot allometry plant biomass partitioning,800,max_pages_reached,8,0
+Q05,pipe model sapwood leaf area allometry,140,empty_page,3,0
+Q06,hydraulic allometry conduit diameter tapering plant,125,empty_page,3,0
+Q07,self-thinning -3/2 rule plant stand biomass density,800,max_pages_reached,8,0
+Q08,metabolic scaling theory plants quarter-power,800,max_pages_reached,8,0
+Q09,crown allometry stem diameter tree architecture,800,max_pages_reached,8,0
+Q10,reproductive allocation allometry seed mass plant size,800,max_pages_reached,8,0
+Q11,elastic similarity geometric similarity plant height diameter,800,max_pages_reached,8,0
+Q12,corner rules leaf twig allometry,62,empty_page,2,0
+Q13,planta alometria biomasa diametro altura exponente de escala,0,empty_page,1,0
+Q14,plante allometrie biomasse diametre hauteur exposant,0,empty_page,1,0
+Q15,pflanze allometrie biomasse durchmesser hoehe skalierung,0,empty_page,1,0

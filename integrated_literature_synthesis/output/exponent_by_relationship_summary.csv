@@ -1,0 +1,10 @@
+relationship_family,n_exponent_values,exponent_mean,exponent_median,exponent_sd,exponent_min,exponent_max,analysis_stage
+General allometry,55,0.845963690909091,0.75,0.6398234254607795,-1.5,3,candidate_exploratory
+General power-law allometry,32,0.77116671875,0.75,0.6585953034373176,-1.5,3,candidate_exploratory
+Height-diameter,14,1.0993334285714285,0.75,0.8309031108522557,0.01,3,candidate_exploratory
+Metabolic scaling,12,0.54166675,0.75,0.5383054430339923,-1,1,candidate_exploratory
+Pipe-model sapwood-leaf,7,0.6309524285714285,0.75,0.3753305474395679,0,1,candidate_exploratory
+Self-thinning density-biomass,7,0.19047628571428574,0.666667,1.0008264309926929,-1.5,1,candidate_exploratory
+DBH-biomass,5,0.9261334,0.75,0.6538588371948489,0.25,2,candidate_exploratory
+Root-shoot allocation,3,1.7566666666666666,2,0.5105226080530944,1.17,2.1,candidate_exploratory
+Corner rules twig-leaf,1,1,1,NA,1,1,candidate_exploratory

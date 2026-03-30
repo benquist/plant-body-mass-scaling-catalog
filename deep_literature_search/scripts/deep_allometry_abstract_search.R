@@ -18,6 +18,8 @@ MAX_PAGES <- 8
 REQUEST_PAUSE_SEC <- 0.2
 USER_AGENT <- "plant-body-mass-scaling-deep-search/0.2"
 TARGET_LANGUAGES <- c("en", "es", "fr", "de")
+MAX_FAILED_QUERIES <- 2
+MAX_FAILED_PAGE_RATE <- 0.20
 
 `%||%` <- function(x, y) {
   if (is.null(x) || length(x) == 0) y else x
@@ -34,6 +36,42 @@ collapse_chr <- function(x, n_max = 5) {
   x <- x[!is.na(x) & nzchar(x)]
   if (length(x) == 0) return(NA_character_)
   paste(head(x, n_max), collapse = "; ")
+}
+
+normalize_doi <- function(x) {
+  if (is.null(x) || length(x) == 0 || is.na(x) || !nzchar(x)) return(NA_character_)
+  d <- str_to_lower(as.character(x))
+  d <- str_replace(d, "^https?://(dx\\.)?doi\\.org/", "")
+  d <- str_trim(d)
+  if (!nzchar(d)) return(NA_character_)
+  d
+}
+
+slugify <- function(x) {
+  if (is.na(x) || !nzchar(x)) return("na")
+  x |>
+    str_to_lower() |>
+    str_replace_all("[^a-z0-9]+", "-") |>
+    str_replace_all("^-|-$", "") |>
+    str_sub(1, 80)
+}
+
+build_record_key <- function(doi, openalex_id, title, publication_year, authors, journal) {
+  if (!is.na(doi) && nzchar(doi)) return(paste0("doi:", doi))
+  if (!is.na(openalex_id) && nzchar(openalex_id)) return(paste0("oa:", openalex_id))
+
+  first_author <- ifelse(
+    is.na(authors) || !nzchar(authors),
+    "na",
+    str_trim(str_split(authors, ";", simplify = TRUE)[1])
+  )
+  paste0(
+    "fallback:",
+    slugify(title), "|",
+    ifelse(is.na(publication_year), "na", as.character(publication_year)), "|",
+    slugify(first_author), "|",
+    slugify(journal)
+  )
 }
 
 invert_abstract <- function(inv_idx) {
@@ -319,17 +357,46 @@ all_hits <- map_dfr(fetch_results, "records")
 retrieval_diagnostics <- map_dfr(fetch_results, "diagnostics")
 query_run_summary <- map_dfr(fetch_results, "summary")
 
+failed_queries_n <- sum(query_run_summary$pages_failed > 0, na.rm = TRUE)
+failed_page_rate <- if (sum(query_run_summary$pages_attempted, na.rm = TRUE) > 0) {
+  sum(query_run_summary$pages_failed, na.rm = TRUE) / sum(query_run_summary$pages_attempted, na.rm = TRUE)
+} else {
+  0
+}
+
+if (failed_queries_n > MAX_FAILED_QUERIES || failed_page_rate > MAX_FAILED_PAGE_RATE) {
+  stop(
+    "Retrieval quality gate failed: failed_queries_n=", failed_queries_n,
+    ", failed_page_rate=", round(failed_page_rate, 3),
+    ". Adjust query/network settings before using outputs."
+  )
+}
+
 if (nrow(all_hits) == 0) {
   stop("No records returned from OpenAlex. Try reducing query strictness or increasing max_pages.")
 }
 
-all_hits <- all_hits |>
+all_hits_raw <- all_hits |>
+  mutate(
+    doi = map_chr(doi, normalize_doi)
+  )
+
+all_hits <- all_hits_raw |>
   filter(language %in% TARGET_LANGUAGES) |>
   mutate(
-    record_key = coalesce(doi, openalex_id, paste0(title, "_", publication_year)),
+    record_key = pmap_chr(
+      list(doi, openalex_id, title, publication_year, authors, journal),
+      build_record_key
+    ),
     text_for_mining = str_to_lower(paste(title, abstract_text, sep = " \n "))
   ) |>
   filter(!is.na(text_for_mining), nchar(text_for_mining) > 50)
+
+fallback_key_collisions <- all_hits |>
+  filter(str_detect(record_key, "^fallback:")) |>
+  count(record_key, name = "n_records") |>
+  filter(n_records > 1) |>
+  arrange(desc(n_records), record_key)
 
 pattern_hits <- crossing(
   all_hits |> select(record_key, query_id, query_text, openalex_id, doi, title, language, publication_year, cited_by_count, journal, authors, abstract_text, concepts, text_for_mining),
@@ -390,16 +457,24 @@ run_parameters <- tibble(
   max_pages = MAX_PAGES,
   request_pause_sec = REQUEST_PAUSE_SEC,
   target_languages = paste(TARGET_LANGUAGES, collapse = ","),
+  max_failed_queries = MAX_FAILED_QUERIES,
+  max_failed_page_rate = MAX_FAILED_PAGE_RATE,
   n_query_families = nrow(query_families),
   n_pattern_groups = nrow(pattern_dictionary),
   precision_rule = "keep if n_high_specificity_groups>=1 AND n_pattern_groups>=2",
-  raw_candidate_n = nrow(all_hits),
+  raw_unfiltered_candidate_n = nrow(all_hits_raw),
+  raw_language_filtered_candidate_n = nrow(all_hits),
   pattern_hit_rows_n = nrow(pattern_hits),
   ranked_pre_gate_n = nrow(ranked_raw),
-  ranked_post_gate_n = nrow(ranked)
+  ranked_post_gate_n = nrow(ranked),
+  failed_queries_n = failed_queries_n,
+  failed_page_rate = failed_page_rate,
+  fallback_key_collision_n = nrow(fallback_key_collisions)
 )
 
+write_csv(all_hits_raw, file.path(out_dir, "openalex_abstract_candidates_unfiltered.csv"))
 write_csv(all_hits |> select(-text_for_mining), file.path(out_dir, "openalex_abstract_candidates_raw.csv"))
+write_csv(all_hits |> select(-text_for_mining), file.path(out_dir, "openalex_abstract_candidates_filtered.csv"))
 write_csv(pattern_hits, file.path(out_dir, "openalex_pattern_hits_long.csv"))
 write_csv(ranked_raw, file.path(out_dir, "openalex_deep_ranked_candidates_pre_gate.csv"))
 write_csv(ranked, file.path(out_dir, "openalex_deep_ranked_candidates.csv"))
@@ -407,9 +482,11 @@ write_csv(precision_rejections, file.path(out_dir, "openalex_precision_gate_reje
 write_csv(retrieval_diagnostics, file.path(out_dir, "openalex_retrieval_diagnostics.csv"))
 write_csv(search_log, file.path(out_dir, "search_query_log.csv"))
 write_csv(run_parameters, file.path(out_dir, "run_parameters.csv"))
+write_csv(fallback_key_collisions, file.path(out_dir, "fallback_key_collisions.csv"))
 
 message("Deep search complete.")
-message("Raw candidates: ", nrow(all_hits))
+message("Raw candidates (unfiltered): ", nrow(all_hits_raw))
+message("Raw candidates (language/text filtered): ", nrow(all_hits))
 message("Pattern hits: ", nrow(pattern_hits))
 message("Ranked unique papers (pre-gate): ", nrow(ranked_raw))
 message("Ranked unique papers (post-gate): ", nrow(ranked))

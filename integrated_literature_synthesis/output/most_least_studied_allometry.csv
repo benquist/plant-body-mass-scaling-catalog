@@ -1,0 +1,11 @@
+relationship_family,paper_n,analysis_stage,share,rank_class
+General allometry,485,candidate_exploratory,0.30274656679151063,most_studied
+Height-diameter,398,candidate_exploratory,0.2484394506866417,most_studied
+DBH-biomass,332,candidate_exploratory,0.20724094881398253,most_studied
+Root-shoot allocation,107,candidate_exploratory,0.06679151061173533,most_studied
+General power-law allometry,93,candidate_exploratory,0.05805243445692884,most_studied
+Corner rules twig-leaf,11,candidate_exploratory,0.00686641697877653,least_studied
+Pipe-model sapwood-leaf,24,candidate_exploratory,0.0149812734082397,least_studied
+Hydraulic/conduit allometry,32,candidate_exploratory,0.019975031210986267,least_studied
+Self-thinning density-biomass,32,candidate_exploratory,0.019975031210986267,least_studied
+Metabolic scaling,39,candidate_exploratory,0.024344569288389514,least_studied
