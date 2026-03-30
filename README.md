@@ -34,6 +34,9 @@ What trait and life-history relationships have been measured to scale allometric
   - Main source document with both tables.
 - `plant_body_mass_scaling_comprehensive.html`
   - Rendered output for review/sharing.
+- `deep_literature_search/`
+  - Separate augmentation pipeline for deeper abstract-based literature search.
+  - Includes an OpenAlex abstract-mining script and ranked candidate outputs.
 
 ## Workflow
 
@@ -99,3 +102,15 @@ PATH="/opt/homebrew/bin:$PATH" Rscript -e 'rmarkdown::render("plant_body_mass_sc
 - Add a formal references section with DOI links/BibTeX keys.
 - Add clade-specific and biome-specific rows.
 - Add confidence intervals and sample-size metadata per relationship where available.
+
+## Deeper-Dive Augmentation (New)
+
+To augment the original curated approach with a second strategy, run:
+
+```bash
+Rscript plant_body_mass_scaling_project/deep_literature_search/scripts/deep_allometry_abstract_search.R
+```
+
+This writes ranked allometry candidates to `plant_body_mass_scaling_project/deep_literature_search/output/openalex_deep_ranked_candidates.csv` for manual screening and integration into the main catalog.
+
+The deep pipeline also logs retrieval diagnostics and applies a precision gate before final ranking to reduce false positives and make coverage gaps auditable.

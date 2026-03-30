@@ -1639,8 +1639,35 @@ experiment type).</li>
 <li>Lack metadata needed to map relationship type, scope, or units.</li>
 </ul>
 </div>
-<div id="taxonomy-reconciliation-requirements" class="section level3" number="3.4">
-<h3><span class="header-section-number">3.4</span> Taxonomy
+<div id="deep-search-augmentation-handoff" class="section level3" number="3.4">
+<h3><span class="header-section-number">3.4</span> Deep-Search
+Augmentation Handoff</h3>
+<p>When using the abstract-mining augmentation pipeline
+(<code>deep_literature_search/</code>), apply this handoff before adding
+rows to the catalog:</p>
+<ol style="list-style-type: decimal">
+<li>Prioritize papers from
+<code>openalex_deep_ranked_candidates.csv</code>.</li>
+<li>Confirm each candidate is truly plant-focused and contains empirical
+allometric evidence (fitted relationship or recoverable exponent).</li>
+<li>Record why any high-ranked candidate was excluded (for
+reproducibility and precision auditing).</li>
+<li>Attach taxonomy reconciliation fields before integration:</li>
+</ol>
+<ul>
+<li>reported taxon name</li>
+<li>accepted taxon name</li>
+<li>accepted status (accepted/synonym/unresolved)</li>
+<li>backbone source + version date</li>
+<li>backbone ID, match method, and confidence</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>Map accepted studies into the same extraction schema used below so
+curated and deep-search streams remain comparable.</li>
+</ol>
+</div>
+<div id="taxonomy-reconciliation-requirements" class="section level3" number="3.5">
+<h3><span class="header-section-number">3.5</span> Taxonomy
 Reconciliation Requirements</h3>
 <ul>
 <li>Use an explicit plant backbone (for example POWO/WFO), with
@@ -1653,8 +1680,8 @@ confidence, and timestamp.</li>
 silently.</li>
 </ul>
 </div>
-<div id="evidence-tiering" class="section level3" number="3.5">
-<h3><span class="header-section-number">3.5</span> Evidence Tiering</h3>
+<div id="evidence-tiering" class="section level3" number="3.6">
+<h3><span class="header-section-number">3.6</span> Evidence Tiering</h3>
 <p>Each relationship should be tagged into one tier:</p>
 <ul>
 <li>Empirical quantitative</li>

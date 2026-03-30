@@ -62,6 +62,21 @@ Exclude studies that:
 - Are purely theoretical without plant calibration.
 - Lack metadata needed to map relationship type, scope, or units.
 
+### Deep-Search Augmentation Handoff
+
+When using the abstract-mining augmentation pipeline (`deep_literature_search/`), apply this handoff before adding rows to the catalog:
+
+1. Prioritize papers from `openalex_deep_ranked_candidates.csv`.
+2. Confirm each candidate is truly plant-focused and contains empirical allometric evidence (fitted relationship or recoverable exponent).
+3. Record why any high-ranked candidate was excluded (for reproducibility and precision auditing).
+4. Attach taxonomy reconciliation fields before integration:
+  - reported taxon name
+  - accepted taxon name
+  - accepted status (accepted/synonym/unresolved)
+  - backbone source + version date
+  - backbone ID, match method, and confidence
+5. Map accepted studies into the same extraction schema used below so curated and deep-search streams remain comparable.
+
 ### Taxonomy Reconciliation Requirements
 
 - Use an explicit plant backbone (for example POWO/WFO), with version/date.

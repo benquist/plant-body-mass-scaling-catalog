@@ -29,5 +29,20 @@ Prompt: Yes
 Source session: current workspace session
 Outcome: Added a third table defining a study-level extraction schema for a systematic review workflow and re-rendered the HTML.
 
+6. Date: 2026-03-30
+Prompt: yes implement these
+Source session: current workspace session
+Outcome: Implemented deep-search workflow hardening: explicit OpenAlex retrieval diagnostics, precision-gated ranking, expanded run provenance outputs, taxonomy handoff requirements, and harmonized run instructions while preserving the original curated approach.
+
+7. Date: 2026-03-30
+Prompt: yes run it
+Source session: current workspace session
+Outcome: Executed the hardened deep literature-search pipeline and generated first-pass OpenAlex abstract-mining outputs, including ranked candidates, precision-gate rejections, retrieval diagnostics, and run metadata.
+
+8. Date: 2026-03-30
+Prompt: yes
+Source session: current workspace session
+Outcome: Built a structured screening queue from the 712 precision-passing deep-search candidates, including screening decisions, full-text priority flags, and taxonomy reconciliation handoff columns.
+
 ## Update Rule
 Append a new entry whenever prompts lead to created/modified literature-synthesis content, workflow logic, search protocol, or rendered outputs under plant_body_mass_scaling_project/.
