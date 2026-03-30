@@ -1,0 +1,185 @@
+---
+title: "Deep Literature Search Results Summary"
+author: "GitHub Copilot workflow output"
+date: "2026-03-30"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(dplyr)
+library(readr)
+library(knitr)
+
+summary_dir <- normalizePath(dirname(knitr::current_input(dir = TRUE)), winslash = "/", mustWork = TRUE)
+output_dir <- file.path(summary_dir, "output")
+screening_dir <- file.path(summary_dir, "screening")
+
+run_parameters <- read_csv(file.path(output_dir, "run_parameters.csv"), show_col_types = FALSE)
+query_log <- read_csv(file.path(output_dir, "search_query_log.csv"), show_col_types = FALSE)
+ranked <- read_csv(file.path(output_dir, "openalex_deep_ranked_candidates.csv"), show_col_types = FALSE)
+pattern_hits <- read_csv(file.path(output_dir, "openalex_pattern_hits_long.csv"), show_col_types = FALSE)
+screening_summary <- read_csv(file.path(screening_dir, "deep_search_screening_queue_summary.csv"), show_col_types = FALSE)
+screening_queue <- read_csv(file.path(screening_dir, "deep_search_screening_queue.csv"), show_col_types = FALSE)
+
+run_row <- run_parameters[1, ]
+
+top_journals <- ranked |>
+  count(journal, sort = TRUE, name = "ranked_papers") |>
+  mutate(journal = ifelse(is.na(journal) | journal == "", "Unknown", journal)) |>
+  slice_head(n = 15)
+
+top_patterns <- pattern_hits |>
+  count(pattern_group, sort = TRUE, name = "hit_rows") |>
+  slice_head(n = 15)
+
+queries_needing_expansion <- query_log |>
+  filter(terminal_reason == "max_pages_reached") |>
+  select(query_id, query_text, records_fetched, terminal_reason)
+
+top_candidates <- ranked |>
+  mutate(
+    doi_link = ifelse(
+      !is.na(doi) & nzchar(doi),
+      sprintf("<a href=\"%s\">doi</a>", doi),
+      ""
+    )
+  ) |>
+  select(
+    title,
+    publication_year,
+    journal,
+    cited_by_count,
+    n_pattern_groups,
+    hit_groups,
+    deep_relevance_score,
+    doi_link
+  ) |>
+  slice_head(n = 25)
+
+screening_preview <- screening_queue |>
+  select(
+    screening_rank,
+    screening_priority,
+    full_text_priority,
+    title,
+    publication_year,
+    journal,
+    include_for_catalog,
+    accepted_status
+  ) |>
+  slice_head(n = 25)
+```
+
+## Overview
+
+This report summarizes the first hardened deep-search run for plant body-mass allometry literature.
+
+- Run UTC: `r run_row$run_utc`
+- Script version: `r run_row$script_version`
+- Query families: `r run_row$n_query_families`
+- Pattern groups: `r run_row$n_pattern_groups`
+- Precision rule: `r run_row$precision_rule`
+
+## Headline Counts
+
+```{r headline-counts}
+headline_tbl <- tibble::tibble(
+  Metric = c(
+    "Raw candidates fetched",
+    "Pattern-hit rows",
+    "Ranked unique papers before gate",
+    "Ranked unique papers after gate",
+    "High-priority screening papers",
+    "Priority full-text papers"
+  ),
+  Value = c(
+    run_row$raw_candidate_n,
+    run_row$pattern_hit_rows_n,
+    run_row$ranked_pre_gate_n,
+    run_row$ranked_post_gate_n,
+    screening_summary$high_priority_n,
+    screening_summary$priority_full_text_n
+  )
+)
+
+kable(headline_tbl, format = "html", caption = "Main output counts from the deep-search run.")
+```
+
+## Query Performance
+
+```{r query-performance}
+query_tbl <- query_log |>
+  select(
+    query_id,
+    query_text,
+    pages_attempted,
+    pages_ok,
+    pages_failed,
+    records_fetched,
+    terminal_reason
+  )
+
+kable(query_tbl, format = "html", caption = "Per-query retrieval summary.")
+```
+
+## Queries That Hit the Page Cap
+
+```{r query-cap}
+if (nrow(queries_needing_expansion) == 0) {
+  cat("No queries hit the configured page cap in this run.")
+} else {
+  kable(
+    queries_needing_expansion,
+    format = "html",
+    caption = "Queries that hit max_pages_reached and may merit deeper expansion in a future run."
+  )
+}
+```
+
+## Top Journals In Ranked Results
+
+```{r top-journals}
+kable(top_journals, format = "html", caption = "Journals most represented in the post-gate ranked candidate set.")
+```
+
+## Most Frequent Pattern Groups
+
+```{r top-patterns}
+kable(top_patterns, format = "html", caption = "Pattern groups most frequently matched across abstract-hit rows.")
+```
+
+## Top Ranked Candidate Papers
+
+```{r top-candidates}
+kable(
+  top_candidates,
+  format = "html",
+  escape = FALSE,
+  digits = 2,
+  caption = "Top 25 ranked candidate papers from the post-gate set."
+)
+```
+
+## Screening Queue Summary
+
+```{r screening-summary}
+kable(screening_summary, format = "html", caption = "Summary of the generated screening queue.")
+```
+
+## Screening Queue Preview
+
+```{r screening-preview}
+kable(screening_preview, format = "html", caption = "First 25 rows from the manual screening queue.")
+```
+
+## Interpretation Notes
+
+- The deep-search workflow found a large candidate set and retained `r run_row$ranked_post_gate_n` papers after the precision gate.
+- Several broad query families hit `max_pages_reached`, so this is a substantial first pass rather than a guaranteed exhaustive crawl.
+- The screening queue is now ready for manual triage, taxonomic reconciliation, and integration into the main catalog workflow.

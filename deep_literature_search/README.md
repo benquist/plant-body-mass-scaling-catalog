@@ -59,6 +59,11 @@ Generated in `deep_literature_search/screening/` after queue creation:
 - `deep_search_screening_queue.csv`
 - `deep_search_screening_queue_summary.csv`
 
+Generated in `deep_literature_search/` after summary render:
+
+- `deep_search_results_summary.Rmd`
+- `deep_search_results_summary.html`
+
 ## Build Screening Queue
 
 After running the abstract search, create a structured screening table with manual-review and taxonomy-handoff fields:
@@ -73,6 +78,20 @@ Alternative (from inside `plant_body_mass_scaling_project`):
 
 ```bash
 Rscript deep_literature_search/scripts/build_screening_queue.R
+```
+
+## Render Summary Report
+
+Canonical (from workspace root):
+
+```bash
+Rscript -e "rmarkdown::render('plant_body_mass_scaling_project/deep_literature_search/deep_search_results_summary.Rmd', quiet = TRUE)"
+```
+
+Alternative (from inside `plant_body_mass_scaling_project`):
+
+```bash
+Rscript -e "rmarkdown::render('deep_literature_search/deep_search_results_summary.Rmd', quiet = TRUE)"
 ```
 
 ## Taxonomy Handoff Requirements

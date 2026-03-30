@@ -44,5 +44,15 @@ Prompt: yes
 Source session: current workspace session
 Outcome: Built a structured screening queue from the 712 precision-passing deep-search candidates, including screening decisions, full-text priority flags, and taxonomy reconciliation handoff columns.
 
+9. Date: 2026-03-30
+Prompt: I would liek to have a html and rmd summary
+Source session: current workspace session
+Outcome: Added a results-summary R Markdown report for the deep-search workflow and rendered an HTML summary covering headline counts, query performance, top-ranked papers, and screening queue status.
+
+10. Date: 2026-03-30
+Prompt: Can you now push the updated new code also to the github repo?
+Source session: current workspace session
+Outcome: Prepared the latest deep-search summary additions and provenance updates for commit and push to the plant body-mass GitHub repository.
+
 ## Update Rule
 Append a new entry whenever prompts lead to created/modified literature-synthesis content, workflow logic, search protocol, or rendered outputs under plant_body_mass_scaling_project/.
