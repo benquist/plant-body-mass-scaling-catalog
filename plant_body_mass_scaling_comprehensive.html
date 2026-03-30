@@ -3518,8 +3518,541 @@ performance variables.
 </tbody>
 </table>
 </div>
-<div id="interpretation-notes" class="section level2" number="7">
-<h2><span class="header-section-number">7</span> Interpretation
+<div id="third-table-study-level-extraction-schema-for-systematic-review" class="section level2" number="7">
+<h2><span class="header-section-number">7</span> Third Table:
+Study-Level Extraction Schema (For Systematic Review)</h2>
+<pre class="r"><code>extraction_schema_tbl &lt;- tibble::tribble(
+  ~Field_name, ~Required, ~Description, ~Example,
+  &quot;record_id&quot;, &quot;Yes&quot;, &quot;Unique row ID for each extracted relationship&quot;, &quot;PBMSR_0001&quot;,
+  &quot;source_type&quot;, &quot;Yes&quot;, &quot;Primary empirical, meta-analysis, theory, or review&quot;, &quot;Primary empirical&quot;,
+  &quot;citation_short&quot;, &quot;Yes&quot;, &quot;Short reference used in tables&quot;, &quot;Niklas and Enquist (2001)&quot;,
+  &quot;doi&quot;, &quot;Recommended&quot;, &quot;DOI for provenance and deduplication&quot;, &quot;10.1038/35035055&quot;,
+  &quot;year&quot;, &quot;Yes&quot;, &quot;Publication year&quot;, &quot;2001&quot;,
+  &quot;relationship_name&quot;, &quot;Yes&quot;, &quot;Human-readable name of scaling relationship&quot;, &quot;Absolute growth rate vs biomass&quot;,
+  &quot;domain&quot;, &quot;Yes&quot;, &quot;Physiology, ecology, evolution, or cross-domain&quot;, &quot;Physiology&quot;,
+  &quot;response_trait&quot;, &quot;Yes&quot;, &quot;Trait on y-axis of scaling model&quot;, &quot;Absolute growth rate&quot;,
+  &quot;size_predictor&quot;, &quot;Yes&quot;, &quot;Size variable on x-axis&quot;, &quot;Whole-plant dry mass&quot;,
+  &quot;scaling_form&quot;, &quot;Yes&quot;, &quot;Model form exactly as fit or reported&quot;, &quot;AGR = a*M^b&quot;,
+  &quot;exponent_b&quot;, &quot;Recommended&quot;, &quot;Estimated scaling exponent&quot;, &quot;0.74&quot;,
+  &quot;exponent_ci&quot;, &quot;Recommended&quot;, &quot;Confidence interval (or SE) for exponent&quot;, &quot;0.70-0.78&quot;,
+  &quot;intercept_a&quot;, &quot;Optional&quot;, &quot;Intercept estimate in reported units&quot;, &quot;0.12&quot;,
+  &quot;fit_method&quot;, &quot;Yes&quot;, &quot;OLS, SMA, RMA, mixed-effects, phylogenetic model&quot;, &quot;SMA&quot;,
+  &quot;sample_size_n&quot;, &quot;Yes&quot;, &quot;Number of observations used in fit&quot;, &quot;312&quot;,
+  &quot;taxon_scope_reported&quot;, &quot;Yes&quot;, &quot;Original taxonomic scope as stated&quot;, &quot;Angiosperms&quot;,
+  &quot;name_input_verbatim&quot;, &quot;Recommended&quot;, &quot;Original taxon names exactly as reported&quot;, &quot;Quercus agrifolia&quot;,
+  &quot;name_accepted&quot;, &quot;Recommended&quot;, &quot;Reconciled accepted name&quot;, &quot;Quercus agrifolia Née&quot;,
+  &quot;taxon_id&quot;, &quot;Recommended&quot;, &quot;Backbone taxon ID&quot;, &quot;POWO:urn:lsid:ipni.org:names:296583-1&quot;,
+  &quot;taxonomic_status&quot;, &quot;Recommended&quot;, &quot;Accepted, synonym, unresolved, ambiguous&quot;, &quot;Accepted&quot;,
+  &quot;backbone_source&quot;, &quot;Recommended&quot;, &quot;Taxonomic backbone used for reconciliation&quot;, &quot;POWO&quot;,
+  &quot;backbone_version_date&quot;, &quot;Recommended&quot;, &quot;Backbone version or access date&quot;, &quot;2026-03-29&quot;,
+  &quot;biome_or_system&quot;, &quot;Recommended&quot;, &quot;Biome/region/system context&quot;, &quot;Temperate forest&quot;,
+  &quot;ontogenetic_stage&quot;, &quot;Recommended&quot;, &quot;Seedling, sapling, mature, mixed&quot;, &quot;Mixed&quot;,
+  &quot;trait_units&quot;, &quot;Yes&quot;, &quot;Units of response trait&quot;, &quot;g day^-1&quot;,
+  &quot;size_units&quot;, &quot;Yes&quot;, &quot;Units of size predictor&quot;, &quot;g&quot;,
+  &quot;temperature_or_env_controls&quot;, &quot;Optional&quot;, &quot;Key environmental normalization variables&quot;, &quot;Temperature normalized to 25C&quot;,
+  &quot;notes_assumptions&quot;, &quot;Yes&quot;, &quot;Study-specific assumptions needed for interpretation&quot;, &quot;Comparable ontogenetic stages&quot;,
+  &quot;evidence_tier&quot;, &quot;Yes&quot;, &quot;Empirical quantitative, empirical qualitative, conceptual/historical&quot;, &quot;Empirical quantitative&quot;,
+  &quot;quality_flag&quot;, &quot;Recommended&quot;, &quot;High, moderate, low extraction confidence&quot;, &quot;High&quot;,
+  &quot;data_source_url&quot;, &quot;Yes&quot;, &quot;URL to publication or data source&quot;, &quot;https://doi.org/10.1038/35035055&quot;,
+  &quot;extracted_by&quot;, &quot;Yes&quot;, &quot;Person/agent who extracted row&quot;, &quot;GitHub Copilot&quot;,
+  &quot;extracted_utc&quot;, &quot;Yes&quot;, &quot;Extraction timestamp in UTC&quot;, &quot;2026-03-29 15:25:00 UTC&quot;
+)
+
+knitr::kable(
+  extraction_schema_tbl,
+  format = &quot;html&quot;,
+  escape = TRUE,
+  caption = &quot;Recommended study-level extraction schema for reproducible scaling synthesis.&quot;
+)</code></pre>
+<table>
+<caption>
+Recommended study-level extraction schema for reproducible scaling
+synthesis.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Field_name
+</th>
+<th style="text-align:left;">
+Required
+</th>
+<th style="text-align:left;">
+Description
+</th>
+<th style="text-align:left;">
+Example
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+record_id
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Unique row ID for each extracted relationship
+</td>
+<td style="text-align:left;">
+PBMSR_0001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+source_type
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Primary empirical, meta-analysis, theory, or review
+</td>
+<td style="text-align:left;">
+Primary empirical
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+citation_short
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Short reference used in tables
+</td>
+<td style="text-align:left;">
+Niklas and Enquist (2001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+doi
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+DOI for provenance and deduplication
+</td>
+<td style="text-align:left;">
+10.1038/35035055
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Publication year
+</td>
+<td style="text-align:left;">
+2001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+relationship_name
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Human-readable name of scaling relationship
+</td>
+<td style="text-align:left;">
+Absolute growth rate vs biomass
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+domain
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Physiology, ecology, evolution, or cross-domain
+</td>
+<td style="text-align:left;">
+Physiology
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+response_trait
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Trait on y-axis of scaling model
+</td>
+<td style="text-align:left;">
+Absolute growth rate
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+size_predictor
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Size variable on x-axis
+</td>
+<td style="text-align:left;">
+Whole-plant dry mass
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+scaling_form
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Model form exactly as fit or reported
+</td>
+<td style="text-align:left;">
+AGR = a*M^b
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+exponent_b
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Estimated scaling exponent
+</td>
+<td style="text-align:left;">
+0.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+exponent_ci
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Confidence interval (or SE) for exponent
+</td>
+<td style="text-align:left;">
+0.70-0.78
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+intercept_a
+</td>
+<td style="text-align:left;">
+Optional
+</td>
+<td style="text-align:left;">
+Intercept estimate in reported units
+</td>
+<td style="text-align:left;">
+0.12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fit_method
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+OLS, SMA, RMA, mixed-effects, phylogenetic model
+</td>
+<td style="text-align:left;">
+SMA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sample_size_n
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Number of observations used in fit
+</td>
+<td style="text-align:left;">
+312
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+taxon_scope_reported
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Original taxonomic scope as stated
+</td>
+<td style="text-align:left;">
+Angiosperms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+name_input_verbatim
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Original taxon names exactly as reported
+</td>
+<td style="text-align:left;">
+Quercus agrifolia
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+name_accepted
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Reconciled accepted name
+</td>
+<td style="text-align:left;">
+Quercus agrifolia Née
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+taxon_id
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Backbone taxon ID
+</td>
+<td style="text-align:left;">
+POWO:<a href="urn:lsid:ipni.org:names:296583-1" class="uri">urn:lsid:ipni.org:names:296583-1</a>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+taxonomic_status
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Accepted, synonym, unresolved, ambiguous
+</td>
+<td style="text-align:left;">
+Accepted
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+backbone_source
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Taxonomic backbone used for reconciliation
+</td>
+<td style="text-align:left;">
+POWO
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+backbone_version_date
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Backbone version or access date
+</td>
+<td style="text-align:left;">
+2026-03-29
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+biome_or_system
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Biome/region/system context
+</td>
+<td style="text-align:left;">
+Temperate forest
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ontogenetic_stage
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+Seedling, sapling, mature, mixed
+</td>
+<td style="text-align:left;">
+Mixed
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+trait_units
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Units of response trait
+</td>
+<td style="text-align:left;">
+g day^-1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+size_units
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Units of size predictor
+</td>
+<td style="text-align:left;">
+g
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+temperature_or_env_controls
+</td>
+<td style="text-align:left;">
+Optional
+</td>
+<td style="text-align:left;">
+Key environmental normalization variables
+</td>
+<td style="text-align:left;">
+Temperature normalized to 25C
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+notes_assumptions
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Study-specific assumptions needed for interpretation
+</td>
+<td style="text-align:left;">
+Comparable ontogenetic stages
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+evidence_tier
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Empirical quantitative, empirical qualitative, conceptual/historical
+</td>
+<td style="text-align:left;">
+Empirical quantitative
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+quality_flag
+</td>
+<td style="text-align:left;">
+Recommended
+</td>
+<td style="text-align:left;">
+High, moderate, low extraction confidence
+</td>
+<td style="text-align:left;">
+High
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+data_source_url
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+URL to publication or data source
+</td>
+<td style="text-align:left;">
+<a href="https://doi.org/10.1038/35035055" class="uri">https://doi.org/10.1038/35035055</a>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+extracted_by
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Person/agent who extracted row
+</td>
+<td style="text-align:left;">
+GitHub Copilot
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+extracted_utc
+</td>
+<td style="text-align:left;">
+Yes
+</td>
+<td style="text-align:left;">
+Extraction timestamp in UTC
+</td>
+<td style="text-align:left;">
+2026-03-29 15:25:00 UTC
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="interpretation-notes" class="section level2" number="8">
+<h2><span class="header-section-number">8</span> Interpretation
 Notes</h2>
 <ul>
 <li>Exponents are often context-dependent and vary by clade, biome,
@@ -3529,8 +4062,8 @@ seminal point for each relationship, not necessarily the earliest
 historical mention.</li>
 </ul>
 </div>
-<div id="suggested-next-expansion" class="section level2" number="8">
-<h2><span class="header-section-number">8</span> Suggested Next
+<div id="suggested-next-expansion" class="section level2" number="9">
+<h2><span class="header-section-number">9</span> Suggested Next
 Expansion</h2>
 <ol style="list-style-type: decimal">
 <li>Add clade-specific rows (angiosperms, gymnosperms, ferns,

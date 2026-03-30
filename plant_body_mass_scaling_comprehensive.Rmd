@@ -481,6 +481,54 @@ kable(
 )
 ```
 
+## Third Table: Study-Level Extraction Schema (For Systematic Review)
+
+```{r}
+extraction_schema_tbl <- tibble::tribble(
+  ~Field_name, ~Required, ~Description, ~Example,
+  "record_id", "Yes", "Unique row ID for each extracted relationship", "PBMSR_0001",
+  "source_type", "Yes", "Primary empirical, meta-analysis, theory, or review", "Primary empirical",
+  "citation_short", "Yes", "Short reference used in tables", "Niklas and Enquist (2001)",
+  "doi", "Recommended", "DOI for provenance and deduplication", "10.1038/35035055",
+  "year", "Yes", "Publication year", "2001",
+  "relationship_name", "Yes", "Human-readable name of scaling relationship", "Absolute growth rate vs biomass",
+  "domain", "Yes", "Physiology, ecology, evolution, or cross-domain", "Physiology",
+  "response_trait", "Yes", "Trait on y-axis of scaling model", "Absolute growth rate",
+  "size_predictor", "Yes", "Size variable on x-axis", "Whole-plant dry mass",
+  "scaling_form", "Yes", "Model form exactly as fit or reported", "AGR = a*M^b",
+  "exponent_b", "Recommended", "Estimated scaling exponent", "0.74",
+  "exponent_ci", "Recommended", "Confidence interval (or SE) for exponent", "0.70-0.78",
+  "intercept_a", "Optional", "Intercept estimate in reported units", "0.12",
+  "fit_method", "Yes", "OLS, SMA, RMA, mixed-effects, phylogenetic model", "SMA",
+  "sample_size_n", "Yes", "Number of observations used in fit", "312",
+  "taxon_scope_reported", "Yes", "Original taxonomic scope as stated", "Angiosperms",
+  "name_input_verbatim", "Recommended", "Original taxon names exactly as reported", "Quercus agrifolia",
+  "name_accepted", "Recommended", "Reconciled accepted name", "Quercus agrifolia Née",
+  "taxon_id", "Recommended", "Backbone taxon ID", "POWO:urn:lsid:ipni.org:names:296583-1",
+  "taxonomic_status", "Recommended", "Accepted, synonym, unresolved, ambiguous", "Accepted",
+  "backbone_source", "Recommended", "Taxonomic backbone used for reconciliation", "POWO",
+  "backbone_version_date", "Recommended", "Backbone version or access date", "2026-03-29",
+  "biome_or_system", "Recommended", "Biome/region/system context", "Temperate forest",
+  "ontogenetic_stage", "Recommended", "Seedling, sapling, mature, mixed", "Mixed",
+  "trait_units", "Yes", "Units of response trait", "g day^-1",
+  "size_units", "Yes", "Units of size predictor", "g",
+  "temperature_or_env_controls", "Optional", "Key environmental normalization variables", "Temperature normalized to 25C",
+  "notes_assumptions", "Yes", "Study-specific assumptions needed for interpretation", "Comparable ontogenetic stages",
+  "evidence_tier", "Yes", "Empirical quantitative, empirical qualitative, conceptual/historical", "Empirical quantitative",
+  "quality_flag", "Recommended", "High, moderate, low extraction confidence", "High",
+  "data_source_url", "Yes", "URL to publication or data source", "https://doi.org/10.1038/35035055",
+  "extracted_by", "Yes", "Person/agent who extracted row", "GitHub Copilot",
+  "extracted_utc", "Yes", "Extraction timestamp in UTC", "2026-03-29 15:25:00 UTC"
+)
+
+knitr::kable(
+  extraction_schema_tbl,
+  format = "html",
+  escape = TRUE,
+  caption = "Recommended study-level extraction schema for reproducible scaling synthesis."
+)
+```
+
 ## Interpretation Notes
 
 - Exponents are often context-dependent and vary by clade, biome, ontogenetic stage, and statistical method.
