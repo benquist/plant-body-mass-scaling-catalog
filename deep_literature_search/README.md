@@ -8,10 +8,12 @@ The original approach in `plant_body_mass_scaling_comprehensive.Rmd` is unchange
 
 Use online abstract mining to detect plant allometry papers that may be missed by standard curated search strings. This deeper pass focuses on empirical allometric pattern signals in abstracts.
 
+Current language scope in the search pipeline: English, Spanish, French, and German.
+
 ## What This Pipeline Does
 
 1. Queries OpenAlex with multiple allometry-focused query families.
-2. Collects article metadata and abstract text (when available).
+2. Collects article metadata and abstract text (when available) for `en`, `es`, `fr`, and `de` records.
 3. Mines abstracts using a broad allometric pattern dictionary, including:
    - DBH-biomass equations
    - height-diameter scaling
@@ -93,6 +95,13 @@ Alternative (from inside `plant_body_mass_scaling_project`):
 ```bash
 Rscript -e "rmarkdown::render('deep_literature_search/deep_search_results_summary.Rmd', quiet = TRUE)"
 ```
+
+The summary report includes quantitative analyses such as:
+
+- number of papers found by language (raw and post-gate)
+- citation statistics (mean, median, quantiles)
+- publication year and decade distributions
+- query performance and capped-query diagnostics
 
 ## Taxonomy Handoff Requirements
 

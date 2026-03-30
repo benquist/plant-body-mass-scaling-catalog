@@ -42,6 +42,47 @@ queries_needing_expansion <- query_log |>
   filter(terminal_reason == "max_pages_reached") |>
   select(query_id, query_text, records_fetched, terminal_reason)
 
+language_lookup <- tibble::tribble(
+  ~language, ~language_name,
+  "en", "English",
+  "es", "Spanish",
+  "fr", "French",
+  "de", "German"
+)
+
+raw_language_counts <- read_csv(file.path(output_dir, "openalex_abstract_candidates_raw.csv"), show_col_types = FALSE) |>
+  count(language, sort = TRUE, name = "raw_candidates") |>
+  left_join(language_lookup, by = "language") |>
+  mutate(language_name = ifelse(is.na(language_name), language, language_name)) |>
+  select(language_name, language, raw_candidates)
+
+ranked_language_counts <- ranked |>
+  count(language, sort = TRUE, name = "ranked_candidates") |>
+  left_join(language_lookup, by = "language") |>
+  mutate(language_name = ifelse(is.na(language_name), language, language_name)) |>
+  select(language_name, language, ranked_candidates)
+
+citation_summary <- ranked |>
+  summarise(
+    n_ranked = n(),
+    mean_citations = round(mean(cited_by_count, na.rm = TRUE), 2),
+    median_citations = round(median(cited_by_count, na.rm = TRUE), 2),
+    p75_citations = round(as.numeric(quantile(cited_by_count, probs = 0.75, na.rm = TRUE)), 2),
+    p90_citations = round(as.numeric(quantile(cited_by_count, probs = 0.90, na.rm = TRUE)), 2),
+    max_citations = max(cited_by_count, na.rm = TRUE)
+  )
+
+year_distribution <- ranked |>
+  count(publication_year, sort = TRUE, name = "ranked_papers") |>
+  filter(!is.na(publication_year)) |>
+  arrange(desc(publication_year)) |>
+  slice_head(n = 20)
+
+decade_distribution <- ranked |>
+  filter(!is.na(publication_year)) |>
+  mutate(decade = paste0(floor(publication_year / 10) * 10, "s")) |>
+  count(decade, sort = TRUE, name = "ranked_papers")
+
 top_candidates <- ranked |>
   mutate(
     doi_link = ifelse(
@@ -111,6 +152,25 @@ headline_tbl <- tibble::tibble(
 kable(headline_tbl, format = "html", caption = "Main output counts from the deep-search run.")
 ```
 
+## Number of Papers Found (By Language)
+
+```{r language-counts}
+lang_tbl <- full_join(raw_language_counts, ranked_language_counts, by = c("language_name", "language")) |>
+  mutate(
+    raw_candidates = coalesce(raw_candidates, 0L),
+    ranked_candidates = coalesce(ranked_candidates, 0L)
+  ) |>
+  arrange(desc(ranked_candidates), desc(raw_candidates))
+
+kable(lang_tbl, format = "html", caption = "Counts of papers found by language before and after precision gating.")
+```
+
+## Citation Statistics (Ranked Set)
+
+```{r citation-summary}
+kable(citation_summary, format = "html", caption = "Citation-profile summary of ranked candidates.")
+```
+
 ## Query Performance
 
 ```{r query-performance}
@@ -140,6 +200,18 @@ if (nrow(queries_needing_expansion) == 0) {
     caption = "Queries that hit max_pages_reached and may merit deeper expansion in a future run."
   )
 }
+```
+
+## Publication Year Distribution
+
+```{r year-dist}
+kable(year_distribution, format = "html", caption = "Top 20 publication years represented in ranked candidates.")
+```
+
+## Decade Distribution
+
+```{r decade-dist}
+kable(decade_distribution, format = "html", caption = "Ranked candidate counts by decade.")
 ```
 
 ## Top Journals In Ranked Results

@@ -12,11 +12,12 @@ suppressPackageStartupMessages({
 
 SCRIPT_VERSION <- "0.2.0"
 API_BASE <- "https://api.openalex.org/works"
-API_FILTERS <- "language:en,type:article,has_abstract:true"
+API_FILTERS <- "type:article,has_abstract:true"
 PER_PAGE <- 100
 MAX_PAGES <- 8
 REQUEST_PAUSE_SEC <- 0.2
 USER_AGENT <- "plant-body-mass-scaling-deep-search/0.2"
+TARGET_LANGUAGES <- c("en", "es", "fr", "de")
 
 `%||%` <- function(x, y) {
   if (is.null(x) || length(x) == 0) y else x
@@ -107,7 +108,10 @@ query_families <- tribble(
   "Q09", "crown allometry stem diameter tree architecture",
   "Q10", "reproductive allocation allometry seed mass plant size",
   "Q11", "elastic similarity geometric similarity plant height diameter",
-  "Q12", "corner rules leaf twig allometry"
+  "Q12", "corner rules leaf twig allometry",
+  "Q13", "planta alometria biomasa diametro altura exponente de escala",
+  "Q14", "plante allometrie biomasse diametre hauteur exposant",
+  "Q15", "pflanze allometrie biomasse durchmesser hoehe skalierung"
 )
 
 pattern_dictionary <- tribble(
@@ -298,6 +302,7 @@ fetch_openalex <- function(query_id, query_text, per_page = PER_PAGE, max_pages 
     openalex_id = map_chr(works, ~ as_chr(.x$id)),
     doi = map_chr(works, ~ as_chr(.x$doi)),
     title = map_chr(works, ~ as_chr(.x$display_name)),
+    language = map_chr(works, ~ as_chr(.x$language)),
     publication_year = map_int(works, ~ as.integer(.x$publication_year %||% NA_integer_)),
     cited_by_count = map_int(works, ~ as.integer(.x$cited_by_count %||% 0L)),
     journal = map_chr(works, ~ extract_journal(.x$primary_location)),
@@ -319,6 +324,7 @@ if (nrow(all_hits) == 0) {
 }
 
 all_hits <- all_hits |>
+  filter(language %in% TARGET_LANGUAGES) |>
   mutate(
     record_key = coalesce(doi, openalex_id, paste0(title, "_", publication_year)),
     text_for_mining = str_to_lower(paste(title, abstract_text, sep = " \n "))
@@ -326,7 +332,7 @@ all_hits <- all_hits |>
   filter(!is.na(text_for_mining), nchar(text_for_mining) > 50)
 
 pattern_hits <- crossing(
-  all_hits |> select(record_key, query_id, query_text, openalex_id, doi, title, publication_year, cited_by_count, journal, authors, abstract_text, concepts, text_for_mining),
+  all_hits |> select(record_key, query_id, query_text, openalex_id, doi, title, language, publication_year, cited_by_count, journal, authors, abstract_text, concepts, text_for_mining),
   pattern_dictionary
 ) |>
   mutate(is_hit = str_detect(text_for_mining, regex(regex, ignore_case = TRUE))) |>
@@ -334,7 +340,7 @@ pattern_hits <- crossing(
   select(-is_hit)
 
 ranked_raw <- pattern_hits |>
-  group_by(record_key, openalex_id, doi, title, publication_year, cited_by_count, journal, authors, abstract_text, concepts) |>
+  group_by(record_key, openalex_id, doi, title, language, publication_year, cited_by_count, journal, authors, abstract_text, concepts) |>
   summarise(
     n_pattern_groups = n_distinct(pattern_group),
     n_high_specificity_groups = n_distinct(pattern_group[pattern_group %in% high_specificity_groups]),
@@ -370,6 +376,7 @@ search_log <- query_families |>
     max_pages = MAX_PAGES,
     request_pause_sec = REQUEST_PAUSE_SEC,
     user_agent = USER_AGENT,
+    target_languages = paste(TARGET_LANGUAGES, collapse = ","),
     precision_rule = "keep if n_high_specificity_groups>=1 AND n_pattern_groups>=2"
   )
 
@@ -382,6 +389,7 @@ run_parameters <- tibble(
   per_page = PER_PAGE,
   max_pages = MAX_PAGES,
   request_pause_sec = REQUEST_PAUSE_SEC,
+  target_languages = paste(TARGET_LANGUAGES, collapse = ","),
   n_query_families = nrow(query_families),
   n_pattern_groups = nrow(pattern_dictionary),
   precision_rule = "keep if n_high_specificity_groups>=1 AND n_pattern_groups>=2",

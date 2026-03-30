@@ -1,2 +1,2 @@
-run_utc,script_version,project_dir,api_base,api_filters,per_page,max_pages,request_pause_sec,n_query_families,n_pattern_groups,precision_rule,raw_candidate_n,pattern_hit_rows_n,ranked_pre_gate_n,ranked_post_gate_n
-2026-03-30 22:22:33 UTC,0.2.0,/Users/brianjenquist/VSCode/plant_body_mass_scaling_project,https://api.openalex.org/works,"language:en,type:article,has_abstract:true",100,8,0.2,12,13,keep if n_high_specificity_groups>=1 AND n_pattern_groups>=2,7006,4621,1807,712
+run_utc,script_version,project_dir,api_base,api_filters,per_page,max_pages,request_pause_sec,target_languages,n_query_families,n_pattern_groups,precision_rule,raw_candidate_n,pattern_hit_rows_n,ranked_pre_gate_n,ranked_post_gate_n
+2026-03-30 23:14:45 UTC,0.2.0,/Users/brianjenquist/VSCode/plant_body_mass_scaling_project,https://api.openalex.org/works,"type:article,has_abstract:true",100,8,0.2,"en,es,fr,de",15,13,keep if n_high_specificity_groups>=1 AND n_pattern_groups>=2,6999,4616,1808,713
